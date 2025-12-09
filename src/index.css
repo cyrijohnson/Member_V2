@@ -28,6 +28,14 @@ a {
   text-decoration: none;
 }
 
+.muted {
+  color: var(--muted);
+}
+
+.subtle {
+  color: #64748b;
+}
+
 .app-shell {
   min-height: 100vh;
 }
@@ -109,6 +117,123 @@ nav li.active {
 
 .panel + .panel {
   margin-top: 1rem;
+}
+
+.profile-panel {
+  padding: 0;
+  overflow: hidden;
+}
+
+.profile-hero {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1rem;
+  background: linear-gradient(120deg, #1d4ed8, #0ea5e9);
+  color: white;
+  padding: 1.75rem;
+  align-items: center;
+}
+
+.hero-left {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 1rem;
+}
+
+.hero-right {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.avatar-wrap {
+  display: grid;
+  place-items: center;
+}
+
+.avatar.placeholder {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: grid;
+  place-items: center;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+}
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.chip {
+  padding: 0.4rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.chip.accent {
+  background: white;
+  color: #1d4ed8;
+  border-color: white;
+}
+
+.highlight-card {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 16px;
+  padding: 0.9rem 1rem;
+  backdrop-filter: blur(2px);
+}
+
+.highlight-card .label {
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0;
+}
+
+.highlight-card .value {
+  margin: 0.25rem 0 0;
+}
+
+.highlight-card .emphasis {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.section-grid {
+  display: grid;
+  gap: 1rem;
+  padding: 1.25rem;
+}
+
+.section-card {
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1rem 1rem 1.2rem;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+}
+
+.section-heading {
+  margin-bottom: 0.8rem;
+}
+
+.section-heading h2 {
+  margin: 0.2rem 0 0;
+}
+
+.section-subheading {
+  margin: 1rem 0 0.5rem;
+  font-weight: 700;
+  color: #0f172a;
 }
 
 .panel-header {
@@ -227,6 +352,15 @@ button.secondary:hover {
   font-weight: 600;
 }
 
+.value.emphasis {
+  font-size: 1.05rem;
+}
+
+.info-field.emphasis-card {
+  border-color: #dbeafe;
+  background: #eff6ff;
+}
+
 .avatar {
   width: 88px;
   height: 88px;
@@ -244,6 +378,10 @@ button.secondary:hover {
 }
 
 @media (max-width: 640px) {
+  .profile-hero {
+    grid-template-columns: 1fr;
+  }
+
   .app-header {
     flex-direction: column;
     align-items: flex-start;
