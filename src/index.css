@@ -7,7 +7,7 @@
   background-color: #f4f7ff;
   --accent: #0b2f6b;
   --accent-soft: #d9e5ff;
-  --gold: #f4b000;
+  --gold: #1d4ed8;
   --muted: #4b556b;
   --border: #d6deed;
   --panel: #ffffff;
@@ -20,7 +20,7 @@
 body {
   margin: 0;
   min-height: 100vh;
-  background: radial-gradient(circle at 15% 15%, rgba(244, 176, 0, 0.12) 0, transparent 30%),
+  background: radial-gradient(circle at 15% 15%, rgba(29, 78, 216, 0.12) 0, transparent 30%),
     radial-gradient(circle at 85% 20%, rgba(11, 47, 107, 0.1) 0, transparent 25%),
     #f4f7ff;
 }
@@ -145,7 +145,7 @@ nav li.active a {
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 1rem;
-  background: linear-gradient(120deg, var(--accent) 0%, #163a7a 55%, #f4b000 105%);
+  background: linear-gradient(120deg, var(--accent) 0%, #163a7a 55%, #1d4ed8 105%);
   color: white;
   padding: 1.75rem;
   align-items: center;
