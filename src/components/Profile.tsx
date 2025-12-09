@@ -440,6 +440,7 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [disabilityTypes, setDisabilityTypes] = useState<DisabilityTypeOption[]>([]);
+  const [activeFieldId, setActiveFieldId] = useState<string | null>(null);
 
   useEffect(() => {
     const loadDisabilityTypes = async () => {
@@ -464,7 +465,28 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
     setFormData(member);
     setIsEditing(false);
     setSaveError(null);
+    setActiveFieldId(null);
   }, [member]);
+
+  useEffect(() => {
+    if (!isEditing || !activeFieldId) return;
+
+    const activeElement = document.activeElement as HTMLElement | null;
+    if (activeElement?.id === activeFieldId) return;
+
+    const target = document.getElementById(activeFieldId) as
+      | HTMLInputElement
+      | HTMLSelectElement
+      | null;
+
+    if (target) {
+      target.focus({ preventScroll: true });
+      if (target instanceof HTMLInputElement && target.setSelectionRange && target.type !== 'date') {
+        const length = target.value.length;
+        target.setSelectionRange(length, length);
+      }
+    }
+  }, [activeFieldId, formData, isEditing]);
 
   const displayMember = useMemo(() => (isEditing ? formData : member), [formData, member, isEditing]);
 
@@ -535,6 +557,7 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
         <select
           id="disability-type"
           value={currentId}
+          onFocus={() => setActiveFieldId('disability-type')}
           onChange={(event) => {
             const selected = disabilityTypes.find((item) => item.DisabilityId === event.target.value);
             if (!selected) {
@@ -598,6 +621,7 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
           <select
             id={id}
             value={String(currentValue)}
+            onFocus={() => setActiveFieldId(id)}
             onChange={(event) => handleFieldChange(path, event.target.value === 'true')}
           >
             <option value="true">Yes</option>
@@ -616,6 +640,7 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
           <select
             id={id}
             value={String(currentValue)}
+            onFocus={() => setActiveFieldId(id)}
             onChange={(event) => handleFieldChange(path, event.target.value)}
           >
             <option value="">Select an option</option>
@@ -638,6 +663,7 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
           id={id}
           type={type === 'date' ? 'date' : 'text'}
           value={type === 'date' ? toDateInputValue(currentValue) : String(currentValue)}
+          onFocus={() => setActiveFieldId(id)}
           onChange={(event) => handleFieldChange(path, event.target.value)}
         />
       </div>
@@ -647,12 +673,14 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
   const startEditing = () => {
     setFormData(member);
     setIsEditing(true);
+    setActiveFieldId(null);
   };
 
   const handleCancelEdit = () => {
     setFormData(member);
     setIsEditing(false);
     setSaveError(null);
+    setActiveFieldId(null);
   };
 
   const handleSave = async (event: FormEvent) => {
