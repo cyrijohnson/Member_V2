@@ -82,7 +82,6 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
             </h1>
             <p className="muted">These details come directly from your church membership record.</p>
             <div className="chip-row">
-              <span className="chip">Member ID: {formatValue(member.memberId)}</span>
               <span className="chip">Joined: {formatValue(member.dateOfJoining)}</span>
               <span className={`chip ${member.disabled ? 'accent' : ''}`}>
                 {member.disabled ? 'Status: Disabled' : 'Status: Active'}
@@ -166,9 +165,6 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
             <Field label="Local Assembly" value={member.localAssembly?.assemblyName} />
             <Field label="Language Spoken" value={member.localAssembly?.langSpoken} />
             <Field label="Assembly Type" value={member.localAssembly?.assemblyType} />
-            <Field label="Assembly ID" value={member.localAssembly?.assemblyId} />
-            <Field label="Assembly User ID" value={member.localAssembly?.userId} />
-            <Field label="Assembly Type ID" value={member.localAssembly?.assemblyTypeId} />
           </div>
           <div className="section-subheading">Assembly address</div>
           <div className="grid two-columns">
@@ -182,11 +178,7 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
           <div className="section-subheading">District</div>
           <div className="grid two-columns">
             <Field label="District Name" value={member.localAssembly?.district?.districtName} />
-            <Field label="District ID" value={member.localAssembly?.district?.districtId} />
             <Field label="District Description" value={member.localAssembly?.district?.description} />
-            <Field label="District Address" value={member.localAssembly?.district?.districtAddress} />
-            <Field label="District User ID" value={member.localAssembly?.district?.userId} />
-            <Field label="Area ID" value={member.localAssembly?.district?.areaId} />
           </div>
         </div>
 
@@ -197,7 +189,6 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
           </div>
           <div className="grid two-columns">
             <Field label="Salvation Status" value={member.salvationStatus?.salvationStatusText} />
-            <Field label="Assurance ID" value={member.salvationStatus?.assuranceId} />
             <Field label="Date" value={member.salvationStatus?.date} />
             <Field label="Officiating Minister" value={member.salvationStatus?.officiatingMinister} />
             <Field label="Communicant" value={member.salvationStatus?.communicantBool} />
@@ -229,7 +220,6 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
           </div>
           <div className="grid two-columns">
             <Field label="Home Cell Name" value={member.homeCell?.name} />
-            <Field label="Home Cell ID" value={member.homeCell?.id} />
             <Field label="Profession Category" value={member.profCat?.name} />
             <Field label="Profession" value={member.profession} />
           </div>
