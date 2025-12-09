@@ -83,8 +83,8 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
             <p className="muted">These details come directly from your church membership record.</p>
             <div className="chip-row">
               <span className="chip">Member ID: {formatValue(member.memberId)}</span>
-              <span className="chip accent">{formatValue(member.churchStatus)}</span>
               <span className="chip">Joined: {formatValue(member.dateOfJoining)}</span>
+              {member.disabled && <span className="chip accent">Disabled</span>}
             </div>
           </div>
         </div>
@@ -123,6 +123,9 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
             <Field label="Home Town" value={member.homeTown} />
             <Field label="Child" value={member.childFlag} />
             <Field label="Disabled" value={member.disabled} />
+            {member.disabled && (
+              <Field label="Disability Type" value={member.disabilityType?.description} />
+            )}
           </div>
         </div>
 
@@ -222,7 +225,6 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
           <div className="grid two-columns">
             <Field label="Home Cell Name" value={member.homeCell?.name} />
             <Field label="Home Cell ID" value={member.homeCell?.id} />
-            <Field label="Disability Type" value={member.disabilityType?.description} />
             <Field label="Profession Category" value={member.profCat?.name} />
             <Field label="Profession" value={member.profession} />
           </div>
