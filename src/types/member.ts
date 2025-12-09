@@ -36,6 +36,16 @@ export interface MetaLocalAssemblyDTO {
 export interface MetaProfessionCategory {
   id?: string;
   name?: string;
+  description?: string;
+  ProfCatId?: string;
+  ProfCatName?: string;
+  ProfCatDesc?: string;
+}
+
+export interface ProfessionCategoryOption {
+  ProfCatId: string;
+  ProfCatName: string;
+  ProfCatDesc: string;
 }
 
 export interface SalvationStatus {
@@ -68,6 +78,15 @@ export interface DataFiles {
 export interface DisabilityType {
   id?: string;
   description?: string;
+  medCondition?: string;
+  mobilitySupport?: boolean;
+}
+
+export interface DisabilityTypeOption {
+  DisabilityId: string;
+  DisabilityName: string;
+  MedCondition: string;
+  MobilitySupport: boolean;
 }
 
 export interface MemberDetail {
