@@ -1,6 +1,7 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
-import { MemberDetail } from '../types/member';
+import { MemberDetail, DisabilityTypeOption } from '../types/member';
 import { updateMyDetails } from '../api/member';
+import { apiClient } from '../api/client';
 
 interface ProfileProps {
   member: MemberDetail | null;
@@ -438,6 +439,26 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
   const [formData, setFormData] = useState<MemberDetail | null>(member);
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [disabilityTypes, setDisabilityTypes] = useState<DisabilityTypeOption[]>([]);
+
+  useEffect(() => {
+    const loadDisabilityTypes = async () => {
+      try {
+        const res = await apiClient.get<DisabilityTypeOption[]>('api/DisabilityTypes', {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('authToken')}`
+          }
+        });
+        setDisabilityTypes(res.data);
+      } catch (e) {
+        console.error('Error loading disability types:', e);
+        setDisabilityTypes([]);
+      }
+    };
+
+    loadDisabilityTypes();
+  }, []);
 
   useEffect(() => {
     setFormData(member);
@@ -462,6 +483,90 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
       });
       return updated;
     });
+  };
+
+  const resolveDisabilityInfo = (disability: MemberDetail['disabilityType']) => {
+    const typed = disability as Record<string, unknown> | null;
+    const selectedId =
+      (typed?.id as string | undefined) ??
+      (typed?.disabilityId as string | undefined) ??
+      (typed?.DisabilityId as string | undefined) ??
+      '';
+
+    const fallbackName =
+      (typed?.description as string | undefined) ??
+      (typed?.disabilityName as string | undefined) ??
+      (typed?.DisabilityName as string | undefined) ??
+      '';
+
+    const fallbackCondition =
+      (typed?.medCondition as string | undefined) ?? (typed?.MedCondition as string | undefined) ?? '';
+    const fallbackMobility =
+      (typed?.mobilitySupport as boolean | undefined) ??
+      (typed?.MobilitySupport as boolean | undefined);
+
+    const matched = selectedId
+      ? disabilityTypes.find((item) => item.DisabilityId === selectedId)
+      : undefined;
+
+    return {
+      id: matched?.DisabilityId ?? selectedId,
+      name: matched?.DisabilityName ?? fallbackName,
+      medCondition: matched?.MedCondition ?? fallbackCondition,
+      mobilitySupport:
+        matched?.MobilitySupport ??
+        (fallbackMobility !== undefined ? fallbackMobility : undefined)
+    };
+  };
+
+  const DisabilityField = () => {
+    const resolved = resolveDisabilityInfo(displayMember?.disabilityType);
+    const currentId = resolved.id ?? '';
+
+    if (!isEditing) {
+      return <Field label="Disability Type" value={resolved.name || null} />;
+    }
+
+    return (
+      <div className="info-field editable">
+        <label className="label" htmlFor="disability-type">
+          Disability Type
+        </label>
+        <select
+          id="disability-type"
+          value={currentId}
+          onChange={(event) => {
+            const selected = disabilityTypes.find((item) => item.DisabilityId === event.target.value);
+            if (!selected) {
+              handleFieldChange(['disabilityType'], null);
+              return;
+            }
+
+            handleFieldChange(['disabilityType'], {
+              id: selected.DisabilityId,
+              description: selected.DisabilityName,
+              medCondition: selected.MedCondition,
+              mobilitySupport: selected.MobilitySupport
+            });
+          }}
+        >
+          <option value="">Select a disability type</option>
+          {disabilityTypes.map((option) => (
+            <option key={option.DisabilityId} value={option.DisabilityId}>
+              {option.DisabilityName}
+            </option>
+          ))}
+        </select>
+        {resolved.name && (
+          <div className="field-note">
+            {resolved.medCondition && <p>Medical condition: {resolved.medCondition}</p>}
+            {resolved.mobilitySupport !== undefined && (
+              <p>Mobility support: {resolved.mobilitySupport ? 'Yes' : 'No'}</p>
+            )}
+          </div>
+        )}
+      </div>
+    );
   };
 
   const EditableField = ({
@@ -610,6 +715,8 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
     );
   }
 
+  const disabilityInfo = resolveDisabilityInfo(displayMember.disabilityType);
+
   return (
     <form className={`panel profile-panel ${isEditing ? 'is-editing' : ''}`} onSubmit={handleSave}>
       <div className="profile-hero">
@@ -633,8 +740,8 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
               <span className={`chip ${displayMember.disabled ? 'accent' : ''}`}>
                 {displayMember.disabled ? 'Status: Disabled' : 'Status: Active'}
               </span>
-              {displayMember.disabled && displayMember.disabilityType?.description && (
-                <span className="chip subtle">Disability: {displayMember.disabilityType.description}</span>
+              {displayMember.disabled && disabilityInfo.name && (
+                <span className="chip subtle">Disability: {disabilityInfo.name}</span>
               )}
             </div>
           </div>
@@ -708,7 +815,7 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
             <EditableField label="Child" path={['childFlag']} type="boolean" />
             <EditableField label="Disabled" path={['disabled']} type="boolean" />
             {(displayMember.disabled || isEditing) && (
-              <EditableField label="Disability Type" path={['disabilityType', 'description']} />
+              <DisabilityField />
             )}
           </div>
         </div>

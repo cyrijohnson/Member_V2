@@ -461,6 +461,13 @@ button.secondary:hover {
   font-weight: 500;
 }
 
+.field-note {
+  margin-top: 0.5rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
 .avatar {
   width: 88px;
   height: 88px;

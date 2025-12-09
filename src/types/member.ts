@@ -68,6 +68,15 @@ export interface DataFiles {
 export interface DisabilityType {
   id?: string;
   description?: string;
+  medCondition?: string;
+  mobilitySupport?: boolean;
+}
+
+export interface DisabilityTypeOption {
+  DisabilityId: string;
+  DisabilityName: string;
+  MedCondition: string;
+  MobilitySupport: boolean;
 }
 
 export interface MemberDetail {
