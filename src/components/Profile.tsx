@@ -84,7 +84,12 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
             <div className="chip-row">
               <span className="chip">Member ID: {formatValue(member.memberId)}</span>
               <span className="chip">Joined: {formatValue(member.dateOfJoining)}</span>
-              {member.disabled && <span className="chip accent">Disabled</span>}
+              <span className={`chip ${member.disabled ? 'accent' : ''}`}>
+                {member.disabled ? 'Status: Disabled' : 'Status: Active'}
+              </span>
+              {member.disabled && member.disabilityType?.description && (
+                <span className="chip subtle">Disability: {member.disabilityType.description}</span>
+              )}
             </div>
           </div>
         </div>
