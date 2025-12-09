@@ -1,10 +1,12 @@
+import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { MemberDetail } from '../types/member';
+import { updateMyDetails } from '../api/member';
 
 interface ProfileProps {
   member: MemberDetail | null;
   isLoading: boolean;
   errorMessage: string | null;
-  onRetry: () => void;
+  onRetry: () => Promise<void> | void;
 }
 
 const formatValue = (value: string | number | boolean | null | undefined) => {
@@ -20,7 +22,120 @@ const Field = ({ label, value }: { label: string; value?: string | number | bool
   </div>
 );
 
+type FieldPath = (keyof MemberDetail | string)[];
+
+const getValueAtPath = (source: MemberDetail | null, path: FieldPath) =>
+  path.reduce<unknown>((acc, key) => {
+    if (acc && typeof acc === 'object') {
+      return (acc as Record<string, unknown>)[key];
+    }
+    return undefined;
+  }, source ?? undefined);
+
 export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfileProps) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState<MemberDetail | null>(member);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setFormData(member);
+    setIsEditing(false);
+    setSaveError(null);
+  }, [member]);
+
+  const displayMember = useMemo(() => (isEditing ? formData : member), [formData, member, isEditing]);
+
+  const handleFieldChange = (path: FieldPath, value: unknown) => {
+    setFormData((prev) => {
+      if (!prev) return prev;
+      const updated: MemberDetail = JSON.parse(JSON.stringify(prev));
+      let cursor: Record<string, unknown> = updated as unknown as Record<string, unknown>;
+      path.forEach((key, index) => {
+        if (index === path.length - 1) {
+          cursor[key] = value;
+        } else {
+          cursor[key] = cursor[key] ?? {};
+          cursor = cursor[key] as Record<string, unknown>;
+        }
+      });
+      return updated;
+    });
+  };
+
+  const EditableField = ({
+    label,
+    path,
+    type = 'text'
+  }: {
+    label: string;
+    path: FieldPath;
+    type?: 'text' | 'date' | 'boolean';
+  }) => {
+    const rawValue = getValueAtPath(displayMember, path);
+
+    if (!isEditing) {
+      return <Field label={label} value={rawValue as string | number | boolean | null | undefined} />;
+    }
+
+    const id = path.join('-');
+    const currentValue = rawValue ?? (type === 'boolean' ? false : '');
+
+    return (
+      <div className="info-field editable">
+        <label className="label" htmlFor={id}>
+          {label}
+        </label>
+        {type === 'boolean' ? (
+          <select
+            id={id}
+            value={String(currentValue)}
+            onChange={(event) => handleFieldChange(path, event.target.value === 'true')}
+          >
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+          </select>
+        ) : (
+          <input
+            id={id}
+            type={type === 'date' ? 'date' : 'text'}
+            value={String(currentValue)}
+            onChange={(event) => handleFieldChange(path, event.target.value)}
+          />
+        )}
+      </div>
+    );
+  };
+
+  const startEditing = () => {
+    setFormData(member);
+    setIsEditing(true);
+  };
+
+  const handleCancelEdit = () => {
+    setFormData(member);
+    setIsEditing(false);
+    setSaveError(null);
+  };
+
+  const handleSave = async (event: FormEvent) => {
+    event.preventDefault();
+    if (!formData) return;
+
+    try {
+      setIsSaving(true);
+      setSaveError(null);
+      await updateMyDetails(formData);
+      setIsEditing(false);
+      await onRetry();
+    } catch (error) {
+      console.error('Unable to save profile', error);
+      setSaveError('Unable to save your changes. Please try again.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <section className="panel">
@@ -48,7 +163,7 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
     );
   }
 
-  if (!member) {
+  if (!displayMember) {
     return (
       <section className="panel">
         <div className="panel-header">
@@ -64,30 +179,30 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
   }
 
   return (
-    <section className="panel profile-panel">
+    <form className="panel profile-panel" onSubmit={handleSave}>
       <div className="profile-hero">
         <div className="hero-left">
           <div className="avatar-wrap">
-            {member.profilePicture?.url ? (
-              <img className="avatar" src={member.profilePicture.url} alt="Profile" />
+            {displayMember.profilePicture?.url ? (
+              <img className="avatar" src={displayMember.profilePicture.url} alt="Profile" />
             ) : (
-              <div className="avatar placeholder">{member.firstName?.[0]}</div>
+              <div className="avatar placeholder">{displayMember.firstName?.[0]}</div>
             )}
           </div>
           <div>
             <p className="eyebrow">My profile</p>
             <h1>
-              {member.title ? `${member.title} ` : ''}
-              {member.firstName} {member.lastName}
+              {displayMember.title ? `${displayMember.title} ` : ''}
+              {displayMember.firstName} {displayMember.lastName}
             </h1>
             <p className="muted">These details come directly from your church membership record.</p>
             <div className="chip-row">
-              <span className="chip">Joined: {formatValue(member.dateOfJoining)}</span>
-              <span className={`chip ${member.disabled ? 'accent' : ''}`}>
-                {member.disabled ? 'Status: Disabled' : 'Status: Active'}
+              <span className="chip">Joined: {formatValue(displayMember.dateOfJoining)}</span>
+              <span className={`chip ${displayMember.disabled ? 'accent' : ''}`}>
+                {displayMember.disabled ? 'Status: Disabled' : 'Status: Active'}
               </span>
-              {member.disabled && member.disabilityType?.description && (
-                <span className="chip subtle">Disability: {member.disabilityType.description}</span>
+              {displayMember.disabled && displayMember.disabilityType?.description && (
+                <span className="chip subtle">Disability: {displayMember.disabilityType.description}</span>
               )}
             </div>
           </div>
@@ -95,16 +210,36 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
         <div className="hero-right">
           <div className="highlight-card">
             <p className="label">Local Assembly</p>
-            <p className="value emphasis">{formatValue(member.localAssembly?.assemblyName)}</p>
-            <p className="muted">{formatValue(member.localAssembly?.langSpoken)} | {formatValue(member.localAssembly?.assemblyType)}</p>
+            <p className="value emphasis">{formatValue(displayMember.localAssembly?.assemblyName)}</p>
+            <p className="muted">
+              {formatValue(displayMember.localAssembly?.langSpoken)} | {formatValue(displayMember.localAssembly?.assemblyType)}
+            </p>
           </div>
           <div className="highlight-card">
             <p className="label">Contact</p>
-            <p className="value emphasis">{formatValue(member.mobileNumber || member.telNumber)}</p>
-            <p className="muted">{formatValue(member.emailAddress)}</p>
+            <p className="value emphasis">{formatValue(displayMember.mobileNumber || displayMember.telNumber)}</p>
+            <p className="muted">{formatValue(displayMember.emailAddress)}</p>
+          </div>
+          <div className="hero-actions">
+            {isEditing ? (
+              <div className="form-actions">
+                <button type="submit" disabled={isSaving}>
+                  {isSaving ? 'Saving…' : 'Save changes'}
+                </button>
+                <button type="button" className="secondary" onClick={handleCancelEdit} disabled={isSaving}>
+                  Cancel
+                </button>
+              </div>
+            ) : (
+              <button type="button" onClick={startEditing}>
+                Edit profile
+              </button>
+            )}
           </div>
         </div>
       </div>
+
+      {saveError && <p className="error">{saveError}</p>}
 
       <div className="section-grid">
         <div className="section-card">
@@ -113,22 +248,22 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
             <h2>Who you are</h2>
           </div>
           <div className="grid two-columns">
-            <Field label="First Name" value={member.firstName} />
-            <Field label="Middle Name" value={member.middleName} />
-            <Field label="Last Name" value={member.lastName} />
-            <Field label="Title" value={member.title} />
-            <Field label="Date of Birth" value={member.dob} />
-            <Field label="Gender" value={member.gender} />
-            <Field label="Marital Status" value={member.maritalStatus} />
-            <Field label="Nationality" value={member.nationality} />
-            <Field label="Country of Birth" value={member.countryOfBirth} />
-            <Field label="Country of Residence" value={member.countryOfResidence} />
-            <Field label="Birth Place" value={member.birthPlace} />
-            <Field label="Home Town" value={member.homeTown} />
-            <Field label="Child" value={member.childFlag} />
-            <Field label="Disabled" value={member.disabled} />
-            {member.disabled && (
-              <Field label="Disability Type" value={member.disabilityType?.description} />
+            <EditableField label="First Name" path={['firstName']} />
+            <EditableField label="Middle Name" path={['middleName']} />
+            <EditableField label="Last Name" path={['lastName']} />
+            <EditableField label="Title" path={['title']} />
+            <EditableField label="Date of Birth" path={['dob']} type="date" />
+            <EditableField label="Gender" path={['gender']} />
+            <EditableField label="Marital Status" path={['maritalStatus']} />
+            <EditableField label="Nationality" path={['nationality']} />
+            <EditableField label="Country of Birth" path={['countryOfBirth']} />
+            <EditableField label="Country of Residence" path={['countryOfResidence']} />
+            <EditableField label="Birth Place" path={['birthPlace']} />
+            <EditableField label="Home Town" path={['homeTown']} />
+            <EditableField label="Child" path={['childFlag']} type="boolean" />
+            <EditableField label="Disabled" path={['disabled']} type="boolean" />
+            {(displayMember.disabled || isEditing) && (
+              <EditableField label="Disability Type" path={['disabilityType', 'description']} />
             )}
           </div>
         </div>
@@ -139,20 +274,20 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
             <h2>How to reach you</h2>
           </div>
           <div className="grid two-columns">
-            <Field label="Email" value={member.emailAddress} />
-            <Field label="Mobile" value={member.mobileNumber} />
-            <Field label="Telephone" value={member.telNumber} />
-            <Field label="Emergency Contact" value={member.emergencyContact} />
+            <EditableField label="Email" path={['emailAddress']} />
+            <EditableField label="Mobile" path={['mobileNumber']} />
+            <EditableField label="Telephone" path={['telNumber']} />
+            <EditableField label="Emergency Contact" path={['emergencyContact']} />
           </div>
           <div className="section-subheading">Home address</div>
           <div className="grid two-columns">
-            <Field label="Address Line 1" value={member.memberAddress?.addressLine1} />
-            <Field label="Address Line 2" value={member.memberAddress?.addressLine2} />
-            <Field label="Locality" value={member.memberAddress?.locality} />
-            <Field label="City" value={member.memberAddress?.city} />
-            <Field label="Region" value={member.memberAddress?.region} />
-            <Field label="Postal Code" value={member.memberAddress?.postalCode} />
-            <Field label="Country" value={member.memberAddress?.country} />
+            <EditableField label="Address Line 1" path={['memberAddress', 'addressLine1']} />
+            <EditableField label="Address Line 2" path={['memberAddress', 'addressLine2']} />
+            <EditableField label="Locality" path={['memberAddress', 'locality']} />
+            <EditableField label="City" path={['memberAddress', 'city']} />
+            <EditableField label="Region" path={['memberAddress', 'region']} />
+            <EditableField label="Postal Code" path={['memberAddress', 'postalCode']} />
+            <EditableField label="Country" path={['memberAddress', 'country']} />
           </div>
         </div>
 
@@ -162,23 +297,23 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
             <h2>Your community</h2>
           </div>
           <div className="grid two-columns">
-            <Field label="Local Assembly" value={member.localAssembly?.assemblyName} />
-            <Field label="Language Spoken" value={member.localAssembly?.langSpoken} />
-            <Field label="Assembly Type" value={member.localAssembly?.assemblyType} />
+            <EditableField label="Local Assembly" path={['localAssembly', 'assemblyName']} />
+            <EditableField label="Language Spoken" path={['localAssembly', 'langSpoken']} />
+            <EditableField label="Assembly Type" path={['localAssembly', 'assemblyType']} />
           </div>
           <div className="section-subheading">Assembly address</div>
           <div className="grid two-columns">
-            <Field label="Address Line 1" value={member.localAssembly?.assemblyAddress?.addressLine1} />
-            <Field label="Address Line 2" value={member.localAssembly?.assemblyAddress?.addressLine2} />
-            <Field label="City" value={member.localAssembly?.assemblyAddress?.city} />
-            <Field label="Region" value={member.localAssembly?.assemblyAddress?.region} />
-            <Field label="Postal Code" value={member.localAssembly?.assemblyAddress?.postalCode} />
-            <Field label="Country" value={member.localAssembly?.assemblyAddress?.country} />
+            <EditableField label="Address Line 1" path={['localAssembly', 'assemblyAddress', 'addressLine1']} />
+            <EditableField label="Address Line 2" path={['localAssembly', 'assemblyAddress', 'addressLine2']} />
+            <EditableField label="City" path={['localAssembly', 'assemblyAddress', 'city']} />
+            <EditableField label="Region" path={['localAssembly', 'assemblyAddress', 'region']} />
+            <EditableField label="Postal Code" path={['localAssembly', 'assemblyAddress', 'postalCode']} />
+            <EditableField label="Country" path={['localAssembly', 'assemblyAddress', 'country']} />
           </div>
           <div className="section-subheading">District</div>
           <div className="grid two-columns">
-            <Field label="District Name" value={member.localAssembly?.district?.districtName} />
-            <Field label="District Description" value={member.localAssembly?.district?.description} />
+            <EditableField label="District Name" path={['localAssembly', 'district', 'districtName']} />
+            <EditableField label="District Description" path={['localAssembly', 'district', 'description']} />
           </div>
         </div>
 
@@ -188,19 +323,19 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
             <h2>Faith & milestones</h2>
           </div>
           <div className="grid two-columns">
-            <Field label="Salvation Status" value={member.salvationStatus?.salvationStatusText} />
-            <Field label="Date" value={member.salvationStatus?.date} />
-            <Field label="Officiating Minister" value={member.salvationStatus?.officiatingMinister} />
-            <Field label="Communicant" value={member.salvationStatus?.communicantBool} />
-            <Field label="External Assembly" value={member.salvationStatus?.externalAssembly} />
-            <Field label="Dedication Date" value={member.dedicationDate} />
-            <Field label="Water Baptised" value={member.waterBaptised} />
-            <Field label="Holy Spirit Baptised" value={member.hsBaptised} />
+            <EditableField label="Salvation Status" path={['salvationStatus', 'salvationStatusText']} />
+            <EditableField label="Date" path={['salvationStatus', 'date']} type="date" />
+            <EditableField label="Officiating Minister" path={['salvationStatus', 'officiatingMinister']} />
+            <EditableField label="Communicant" path={['salvationStatus', 'communicantBool']} type="boolean" />
+            <EditableField label="External Assembly" path={['salvationStatus', 'externalAssembly']} type="boolean" />
+            <EditableField label="Dedication Date" path={['dedicationDate']} type="date" />
+            <EditableField label="Water Baptised" path={['waterBaptised']} type="boolean" />
+            <EditableField label="Holy Spirit Baptised" path={['hsBaptised']} type="boolean" />
           </div>
           <div className="section-subheading">Baptism Entries</div>
-          {member.baptismStatus?.length ? (
+          {displayMember.baptismStatus?.length ? (
             <div className="grid two-columns">
-              {member.baptismStatus.map((status, index) => (
+              {displayMember.baptismStatus.map((status, index) => (
                 <div key={`${status.description}-${index}`} className="info-field emphasis-card">
                   <p className="label">Entry {index + 1}</p>
                   <p className="value">{formatValue(status.description)}</p>
@@ -219,12 +354,12 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
             <h2>Home cell & other details</h2>
           </div>
           <div className="grid two-columns">
-            <Field label="Home Cell Name" value={member.homeCell?.name} />
-            <Field label="Profession Category" value={member.profCat?.name} />
-            <Field label="Profession" value={member.profession} />
+            <EditableField label="Home Cell Name" path={['homeCell', 'name']} />
+            <EditableField label="Profession Category" path={['profCat', 'name']} />
+            <EditableField label="Profession" path={['profession']} />
           </div>
         </div>
       </div>
-    </section>
+    </form>
   );
 };
