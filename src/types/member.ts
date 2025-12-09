@@ -36,6 +36,16 @@ export interface MetaLocalAssemblyDTO {
 export interface MetaProfessionCategory {
   id?: string;
   name?: string;
+  description?: string;
+  ProfCatId?: string;
+  ProfCatName?: string;
+  ProfCatDesc?: string;
+}
+
+export interface ProfessionCategoryOption {
+  ProfCatId: string;
+  ProfCatName: string;
+  ProfCatDesc: string;
 }
 
 export interface SalvationStatus {

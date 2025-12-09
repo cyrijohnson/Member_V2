@@ -1,5 +1,5 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
-import { MemberDetail, DisabilityTypeOption } from '../types/member';
+import { MemberDetail, DisabilityTypeOption, ProfessionCategoryOption } from '../types/member';
 import { updateMyDetails } from '../api/member';
 import { apiClient } from '../api/client';
 
@@ -440,6 +440,7 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [disabilityTypes, setDisabilityTypes] = useState<DisabilityTypeOption[]>([]);
+  const [professionCategories, setProfessionCategories] = useState<ProfessionCategoryOption[]>([]);
   const [activeFieldId, setActiveFieldId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -459,6 +460,25 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
     };
 
     loadDisabilityTypes();
+  }, []);
+
+  useEffect(() => {
+    const loadProfessionCategories = async () => {
+      try {
+        const res = await apiClient.get<ProfessionCategoryOption[]>('api/MetaProfessionCategories', {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('authToken')}`
+          }
+        });
+        setProfessionCategories(res.data);
+      } catch (e) {
+        console.error('Error loading profession categories:', e);
+        setProfessionCategories([]);
+      }
+    };
+
+    loadProfessionCategories();
   }, []);
 
   useEffect(() => {
@@ -541,6 +561,30 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
     };
   };
 
+  const resolveProfessionCategory = (category: MemberDetail['profCat']) => {
+    const typed = category as Record<string, unknown> | null;
+    const selectedId =
+      (typed?.id as string | undefined) ??
+      (typed?.profCatId as string | undefined) ??
+      (typed?.ProfCatId as string | undefined) ??
+      '';
+
+    const fallbackName =
+      (typed?.name as string | undefined) ?? (typed?.profCatName as string | undefined) ?? '';
+    const fallbackDescription =
+      (typed?.description as string | undefined) ?? (typed?.ProfCatDesc as string | undefined) ?? '';
+
+    const matched = selectedId
+      ? professionCategories.find((item) => item.ProfCatId === selectedId)
+      : undefined;
+
+    return {
+      id: matched?.ProfCatId ?? selectedId,
+      name: matched?.ProfCatName ?? fallbackName,
+      description: matched?.ProfCatDesc ?? fallbackDescription
+    };
+  };
+
   const DisabilityField = () => {
     const resolved = resolveDisabilityInfo(displayMember?.disabilityType);
     const currentId = resolved.id ?? '';
@@ -586,6 +630,54 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
             {resolved.mobilitySupport !== undefined && (
               <p>Mobility support: {resolved.mobilitySupport ? 'Yes' : 'No'}</p>
             )}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const ProfessionCategoryField = () => {
+    const resolved = resolveProfessionCategory(displayMember?.profCat);
+    const currentId = resolved.id ?? '';
+
+    if (!isEditing) {
+      return <Field label="Profession Category" value={resolved.name || null} />;
+    }
+
+    return (
+      <div className="info-field editable">
+        <label className="label" htmlFor="profession-category">
+          Profession Category
+        </label>
+        <select
+          id="profession-category"
+          value={currentId}
+          onFocus={() => setActiveFieldId('profession-category')}
+          onChange={(event) => {
+            const selected = professionCategories.find((item) => item.ProfCatId === event.target.value);
+
+            if (!selected) {
+              handleFieldChange(['profCat'], null);
+              return;
+            }
+
+            handleFieldChange(['profCat'], {
+              id: selected.ProfCatId,
+              name: selected.ProfCatName,
+              description: selected.ProfCatDesc
+            });
+          }}
+        >
+          <option value="">Select a profession category</option>
+          {professionCategories.map((option) => (
+            <option key={option.ProfCatId} value={option.ProfCatId}>
+              {option.ProfCatName}
+            </option>
+          ))}
+        </select>
+        {resolved.description && (
+          <div className="field-note">
+            <p>{resolved.description}</p>
           </div>
         )}
       </div>
@@ -966,7 +1058,7 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
           </div>
           <div className="grid two-columns">
             <EditableField label="Home Cell Name" path={['homeCell', 'name']} />
-            <EditableField label="Profession Category" path={['profCat', 'name']} />
+            <ProfessionCategoryField />
             <EditableField label="Profession" path={['profession']} />
           </div>
         </div>
