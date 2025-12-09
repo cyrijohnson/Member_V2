@@ -151,6 +151,15 @@ nav li.active a {
   align-items: center;
 }
 
+.profile-hero .eyebrow {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.profile-hero h1,
+.profile-hero .muted {
+  color: rgba(255, 255, 255, 0.95);
+}
+
 .hero-left {
   display: grid;
   grid-template-columns: auto 1fr;
