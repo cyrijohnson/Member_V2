@@ -1,36 +1,6 @@
-export interface DistrictInfo {
-  districtId?: string;
-  districtName?: string;
-  description?: string;
-  districtAddress?: string;
-  addrFId?: string | null;
-  userId?: string;
-  areaId?: string;
-}
-
-export interface Address {
-  addressId?: string;
-  memberId?: string;
-  addressLine1?: string;
-  addressLine2?: string;
-  locality?: string;
-  city?: string;
-  region?: string;
-  postalCode?: string;
-  country?: string;
-}
-
 export interface MetaLocalAssemblyDTO {
-  assemblyId?: string;
-  assemblyName?: string;
-  assemblyAddress?: Address;
-  userId?: string;
-  description?: string | null;
-  districtId?: string;
-  district?: DistrictInfo;
-  langSpoken?: string;
-  assemblyType?: string | null;
-  assemblyTypeId?: string;
+  id?: string;
+  name?: string;
 }
 
 export interface MetaProfessionCategory {
@@ -38,15 +8,17 @@ export interface MetaProfessionCategory {
   name?: string;
 }
 
+export interface Address {
+  street?: string;
+  city?: string;
+  state?: string;
+  postalCode?: string;
+  country?: string;
+}
+
 export interface SalvationStatus {
-  assuranceId?: string;
-  memberId?: string;
-  localAssemblyId?: string;
-  officiatingMinister?: string;
-  salvationStatusText?: string;
+  description?: string;
   date?: string;
-  communicantBool?: boolean;
-  externalAssembly?: boolean;
 }
 
 export interface BaptistStatus {
@@ -73,35 +45,35 @@ export interface DisabilityType {
 export interface MemberDetail {
   memberId: string;
   localAssembly?: MetaLocalAssemblyDTO;
-  profCat?: MetaProfessionCategory | null;
+  profCat?: MetaProfessionCategory;
   memberAddress?: Address;
   salvationStatus?: SalvationStatus;
   baptismStatus?: BaptistStatus[];
-  homeCell?: MetaHomeCellDTO | null;
-  profilePicture?: DataFiles | null;
-  disabilityType?: DisabilityType | null;
-  title?: string;
-  firstName?: string;
-  middleName?: string;
-  lastName?: string;
-  dob?: string;
-  gender?: string;
-  nationality?: string;
-  countryOfBirth?: string;
-  countryOfResidence?: string;
-  maritalStatus?: string;
-  mobileNumber?: string;
-  emailAddress?: string;
-  telNumber?: string;
-  profession?: string;
-  churchStatus?: string;
-  emergencyContact?: string;
-  childFlag?: boolean;
-  disabled?: boolean;
-  dateOfJoining?: string;
-  birthPlace?: string;
-  homeTown?: string;
-  dedicationDate?: string;
-  waterBaptised?: boolean;
-  hsBaptised?: boolean;
+  homeCell?: MetaHomeCellDTO;
+  ProfilePicture?: DataFiles;
+  DisabilityType?: DisabilityType;
+  Title?: string;
+  FirstName?: string;
+  MiddleName?: string;
+  LastName?: string;
+  DOB?: string;
+  Gender?: string;
+  Nationality?: string;
+  CountryOfBirth?: string;
+  CountryOfResidence?: string;
+  MaritalStatus?: string;
+  MobileNumber?: string;
+  EmailAddress?: string;
+  TelNumber?: string;
+  Profession?: string;
+  ChurchStatus?: string;
+  EmergencyContact?: string;
+  ChildFlag?: boolean;
+  Disabled?: boolean;
+  DateOfJoining?: string;
+  BirthPlace?: string;
+  HomeTown?: string;
+  DedicationDate?: string;
+  WaterBaptised?: boolean;
+  HSBaptised?: boolean;
 }
