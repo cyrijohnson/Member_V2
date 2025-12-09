@@ -50,3 +50,14 @@ export const getMyDetails = async (): Promise<MemberDetail> => {
 
   return payload as MemberDetail;
 };
+
+export const updateMyDetails = async (payload: MemberDetail): Promise<MemberDetail> => {
+  const response = await apiClient.put('api/MemebershipManager/updateMyDetails', payload);
+  const data = toCamelCase(response.data);
+
+  if (!data || typeof data !== 'object') {
+    throw new Error('Empty profile payload received after update');
+  }
+
+  return data as MemberDetail;
+};

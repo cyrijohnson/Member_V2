@@ -3,11 +3,13 @@
   font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   line-height: 1.6;
   font-weight: 400;
-  color: #0f172a;
-  background-color: #f8fafc;
-  --accent: #1d4ed8;
-  --muted: #475569;
-  --border: #e2e8f0;
+  color: #0b1a39;
+  background-color: #f4f7ff;
+  --accent: #0b2f6b;
+  --accent-soft: #d9e5ff;
+  --gold: #f4b000;
+  --muted: #4b556b;
+  --border: #d6deed;
   --panel: #ffffff;
 }
 
@@ -18,9 +20,9 @@
 body {
   margin: 0;
   min-height: 100vh;
-  background: radial-gradient(circle at 10% 10%, #e0f2fe 0, transparent 30%),
-    radial-gradient(circle at 90% 20%, #e2e8f0 0, transparent 28%),
-    #f8fafc;
+  background: radial-gradient(circle at 15% 15%, rgba(244, 176, 0, 0.12) 0, transparent 30%),
+    radial-gradient(circle at 85% 20%, rgba(11, 47, 107, 0.1) 0, transparent 25%),
+    #f4f7ff;
 }
 
 a {
@@ -78,20 +80,35 @@ a {
 
 nav ul {
   display: flex;
-  gap: 1rem;
-  padding: 0;
+  gap: 0.35rem;
+  padding: 0.35rem;
   margin: 0;
   list-style: none;
+  background: linear-gradient(135deg, #f7f9ff, #eef2ff);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 8px 20px rgba(11, 47, 107, 0.08);
 }
 
 nav li {
-  padding: 0.35rem 0.5rem;
-  border-radius: 8px;
+  padding: 0;
+  border-radius: 10px;
 }
 
-nav li.active {
-  background-color: #e0e7ff;
-  color: #1e3a8a;
+nav li a {
+  display: block;
+  padding: 0.65rem 1rem;
+  border-radius: 10px;
+  color: var(--muted);
+  font-weight: 700;
+  border: 1px solid transparent;
+}
+
+nav li.active a {
+  background-color: #ffffff;
+  color: var(--accent);
+  border-color: rgba(11, 47, 107, 0.2);
+  box-shadow: 0 10px 24px rgba(11, 47, 107, 0.14);
 }
 
 .header-actions a.secondary,
@@ -128,7 +145,7 @@ nav li.active {
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 1rem;
-  background: linear-gradient(120deg, #1d4ed8, #0ea5e9);
+  background: linear-gradient(120deg, var(--accent) 0%, #163a7a 55%, #f4b000 105%);
   color: white;
   padding: 1.75rem;
   align-items: center;
@@ -144,6 +161,10 @@ nav li.active {
 .hero-right {
   display: grid;
   gap: 0.75rem;
+}
+
+.hero-actions {
+  justify-self: end;
 }
 
 .avatar-wrap {
@@ -181,14 +202,14 @@ nav li.active {
 }
 
 .chip.accent {
-  background: white;
-  color: #1d4ed8;
-  border-color: white;
+  background: var(--gold);
+  color: #0b1a39;
+  border-color: #fcd24f;
 }
 
 .highlight-card {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.35);
   border-radius: 16px;
   padding: 0.9rem 1rem;
   backdrop-filter: blur(2px);
@@ -215,11 +236,11 @@ nav li.active {
 }
 
 .section-card {
-  background: #f8fafc;
-  border: 1px solid var(--border);
+  background: #f7f9ff;
+  border: 1px solid #dfe7f6;
   border-radius: 14px;
   padding: 1rem 1rem 1.2rem;
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+  box-shadow: 0 8px 20px rgba(11, 47, 107, 0.08);
 }
 
 .section-heading {
@@ -233,7 +254,7 @@ nav li.active {
 .section-subheading {
   margin: 1rem 0 0.5rem;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--accent);
 }
 
 .panel-header {
@@ -287,7 +308,7 @@ button.secondary {
   padding: 0.85rem 1.2rem;
   font-weight: 600;
   cursor: pointer;
-  background: var(--accent);
+  background: linear-gradient(135deg, var(--accent), #163a7a);
   color: white;
   transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
@@ -308,7 +329,7 @@ button:hover:not(:disabled),
 a.secondary:hover,
 button.secondary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.2);
+  box-shadow: 0 8px 20px rgba(11, 47, 107, 0.18);
 }
 
 .form-actions {
@@ -335,7 +356,7 @@ button.secondary:hover {
 }
 
 .info-field {
-  background: #f8fafc;
+  background: #ffffff;
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 0.75rem 1rem;
@@ -357,8 +378,25 @@ button.secondary:hover {
 }
 
 .info-field.emphasis-card {
-  border-color: #dbeafe;
-  background: #eff6ff;
+  border-color: var(--accent-soft);
+  background: #eef3ff;
+}
+
+.info-field.editable input,
+.info-field.editable select {
+  width: 100%;
+  margin-top: 0.35rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  font-size: 1rem;
+  font-weight: 600;
+  color: #0b1a39;
+  background: #f8faff;
+}
+
+.info-field.editable select {
+  font-weight: 500;
 }
 
 .avatar {
@@ -366,7 +404,7 @@ button.secondary:hover {
   height: 88px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid #c7d2fe;
+  border: 3px solid #d7e1ff;
 }
 
 .callout {
