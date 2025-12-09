@@ -15,6 +15,19 @@ const formatValue = (value: string | number | boolean | null | undefined) => {
   return String(value);
 };
 
+const toDateInputValue = (value: unknown) => {
+  if (!value) return '';
+
+  if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    return value;
+  }
+
+  const parsed = new Date(String(value));
+  if (Number.isNaN(parsed.getTime())) return '';
+
+  return parsed.toISOString().slice(0, 10);
+};
+
 const COUNTRIES = [
   'Afghanistan',
   'Albania',
@@ -519,7 +532,7 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
         <input
           id={id}
           type={type === 'date' ? 'date' : 'text'}
-          value={String(currentValue)}
+          value={type === 'date' ? toDateInputValue(currentValue) : String(currentValue)}
           onChange={(event) => handleFieldChange(path, event.target.value)}
         />
       </div>
