@@ -224,7 +224,7 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
             {isEditing ? (
               <div className="form-actions">
                 <button type="submit" disabled={isSaving}>
-                  {isSaving ? 'Saving…' : 'Save changes'}
+                  {isSaving ? 'Submitting…' : 'Submit'}
                 </button>
                 <button type="button" className="secondary" onClick={handleCancelEdit} disabled={isSaving}>
                   Cancel
