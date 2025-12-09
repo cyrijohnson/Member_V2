@@ -179,7 +179,7 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
   }
 
   return (
-    <form className="panel profile-panel" onSubmit={handleSave}>
+    <form className={`panel profile-panel ${isEditing ? 'is-editing' : ''}`} onSubmit={handleSave}>
       <div className="profile-hero">
         <div className="hero-left">
           <div className="avatar-wrap">

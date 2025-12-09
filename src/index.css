@@ -256,19 +256,31 @@ nav li.active a {
   box-shadow: 0 8px 20px rgba(11, 47, 107, 0.08);
 }
 
+
+.profile-panel.is-editing .section-grid {
+  padding-bottom: 5.5rem;
+}
+
 .floating-footer {
-  position: sticky;
-  bottom: 0;
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: max(0.5rem, env(safe-area-inset-bottom));
+  width: min(1100px, calc(100% - 1.5rem));
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1.5rem;
   padding: 1rem 1.25rem;
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(10px);
-  border-top: 1px solid var(--border);
-  box-shadow: 0 -8px 24px rgba(11, 47, 107, 0.08);
-  z-index: 5;
+  border: 1px solid var(--border);
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  border-top-left-radius: 14px;
+  border-top-right-radius: 14px;
+  box-shadow: 0 -10px 26px rgba(11, 47, 107, 0.12);
+  z-index: 15;
 }
 
 .floating-footer p {
