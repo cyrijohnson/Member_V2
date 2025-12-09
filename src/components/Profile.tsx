@@ -596,16 +596,22 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
     label,
     path,
     type = 'text',
-    options
+    options,
+    readOnly = false
   }: {
     label: string;
     path: FieldPath;
     type?: 'text' | 'date' | 'boolean' | 'select';
     options?: string[];
+    readOnly?: boolean;
   }) => {
     const rawValue = getValueAtPath(displayMember, path);
 
     if (!isEditing) {
+      return <Field label={label} value={rawValue as string | number | boolean | null | undefined} />;
+    }
+
+    if (readOnly) {
       return <Field label={label} value={rawValue as string | number | boolean | null | undefined} />;
     }
 
@@ -867,7 +873,12 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
             <EditableField label="City" path={['memberAddress', 'city']} />
             <EditableField label="Region" path={['memberAddress', 'region']} />
             <EditableField label="Postal Code" path={['memberAddress', 'postalCode']} />
-            <EditableField label="Country" path={['memberAddress', 'country']} />
+            <EditableField
+              label="Country"
+              path={['memberAddress', 'country']}
+              type="select"
+              options={COUNTRIES}
+            />
           </div>
         </div>
 
@@ -877,23 +888,43 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
             <h2>Your community</h2>
           </div>
           <div className="grid two-columns">
-            <EditableField label="Local Assembly" path={['localAssembly', 'assemblyName']} />
-            <EditableField label="Language Spoken" path={['localAssembly', 'langSpoken']} />
-            <EditableField label="Assembly Type" path={['localAssembly', 'assemblyType']} />
+            <EditableField
+              label="Local Assembly"
+              path={['localAssembly', 'assemblyName']}
+              readOnly
+            />
+            <EditableField label="Language Spoken" path={['localAssembly', 'langSpoken']} readOnly />
+            <EditableField label="Assembly Type" path={['localAssembly', 'assemblyType']} readOnly />
           </div>
           <div className="section-subheading">Assembly address</div>
           <div className="grid two-columns">
-            <EditableField label="Address Line 1" path={['localAssembly', 'assemblyAddress', 'addressLine1']} />
-            <EditableField label="Address Line 2" path={['localAssembly', 'assemblyAddress', 'addressLine2']} />
-            <EditableField label="City" path={['localAssembly', 'assemblyAddress', 'city']} />
-            <EditableField label="Region" path={['localAssembly', 'assemblyAddress', 'region']} />
-            <EditableField label="Postal Code" path={['localAssembly', 'assemblyAddress', 'postalCode']} />
-            <EditableField label="Country" path={['localAssembly', 'assemblyAddress', 'country']} />
+            <EditableField
+              label="Address Line 1"
+              path={['localAssembly', 'assemblyAddress', 'addressLine1']}
+              readOnly
+            />
+            <EditableField
+              label="Address Line 2"
+              path={['localAssembly', 'assemblyAddress', 'addressLine2']}
+              readOnly
+            />
+            <EditableField label="City" path={['localAssembly', 'assemblyAddress', 'city']} readOnly />
+            <EditableField label="Region" path={['localAssembly', 'assemblyAddress', 'region']} readOnly />
+            <EditableField label="Postal Code" path={['localAssembly', 'assemblyAddress', 'postalCode']} readOnly />
+            <EditableField label="Country" path={['localAssembly', 'assemblyAddress', 'country']} readOnly />
           </div>
           <div className="section-subheading">District</div>
           <div className="grid two-columns">
-            <EditableField label="District Name" path={['localAssembly', 'district', 'districtName']} />
-            <EditableField label="District Description" path={['localAssembly', 'district', 'description']} />
+            <EditableField
+              label="District Name"
+              path={['localAssembly', 'district', 'districtName']}
+              readOnly
+            />
+            <EditableField
+              label="District Description"
+              path={['localAssembly', 'district', 'description']}
+              readOnly
+            />
           </div>
         </div>
 
