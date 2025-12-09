@@ -3,14 +3,23 @@ import { MemberDetail } from '../types/member';
 
 const toCamelCase = (value: unknown): unknown => {
   const normalizeKey = (key: string) => {
-    // Handle full uppercase keys like "DOB" or "HSBAPTISED"
-    if (/^[A-Z0-9_]+$/.test(key)) {
-      return key.toLowerCase();
+    if (/^[a-z][a-z0-9]*([A-Z][a-z0-9]+)*$/.test(key)) {
+      return key; // already camelCase
     }
 
-    // Convert underscore or hyphen separated keys and PascalCase to camelCase
-    const separatorNormalized = key.replace(/[-_]+([a-zA-Z0-9])/g, (_, group) => group.toUpperCase());
-    return separatorNormalized.charAt(0).toLowerCase() + separatorNormalized.slice(1);
+    const spaced = key
+      .replace(/[_-]+/g, ' ')
+      .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+      .split(' ')
+      .filter(Boolean);
+
+    return spaced
+      .map((segment, index) => {
+        const lower = segment.toLowerCase();
+        if (index === 0) return lower;
+        return lower.charAt(0).toUpperCase() + lower.slice(1);
+      })
+      .join('');
   };
 
   if (Array.isArray(value)) {
@@ -33,5 +42,11 @@ const toCamelCase = (value: unknown): unknown => {
 
 export const getMyDetails = async (): Promise<MemberDetail> => {
   const response = await apiClient.get('api/MemebershipManager/getMyDetails');
-  return toCamelCase(response.data) as MemberDetail;
+  const payload = toCamelCase(response.data);
+
+  if (!payload || typeof payload !== 'object') {
+    throw new Error('Empty profile payload received');
+  }
+
+  return payload as MemberDetail;
 };
