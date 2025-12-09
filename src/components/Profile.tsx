@@ -222,14 +222,7 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
           </div>
           <div className="hero-actions">
             {isEditing ? (
-              <div className="form-actions">
-                <button type="submit" disabled={isSaving}>
-                  {isSaving ? 'Submitting…' : 'Submit'}
-                </button>
-                <button type="button" className="secondary" onClick={handleCancelEdit} disabled={isSaving}>
-                  Cancel
-                </button>
-              </div>
+              <div className="editing-pill">Editing mode</div>
             ) : (
               <button type="button" onClick={startEditing}>
                 Edit profile
@@ -360,6 +353,23 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
           </div>
         </div>
       </div>
+
+      {isEditing && (
+        <div className="floating-footer">
+          <div className="footer-context">
+            <p className="eyebrow">Editing your profile</p>
+            <p className="muted">Review your updates before submitting.</p>
+          </div>
+          <div className="form-actions">
+            <button type="submit" disabled={isSaving}>
+              {isSaving ? 'Submitting…' : 'Submit'}
+            </button>
+            <button type="button" className="secondary" onClick={handleCancelEdit} disabled={isSaving}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
     </form>
   );
 };
