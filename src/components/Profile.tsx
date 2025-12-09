@@ -7,6 +7,7 @@ interface ProfileProps {
   onRetry: () => void;
 }
 
+
 const Field = ({ label, value }: { label: string; value?: string | number | boolean }) => {
   if (value === undefined || value === null || value === '') return null;
   return (
