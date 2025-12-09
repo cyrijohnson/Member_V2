@@ -15,6 +15,394 @@ const formatValue = (value: string | number | boolean | null | undefined) => {
   return String(value);
 };
 
+const COUNTRIES = [
+  'Afghanistan',
+  'Albania',
+  'Algeria',
+  'Andorra',
+  'Angola',
+  'Antigua and Barbuda',
+  'Argentina',
+  'Armenia',
+  'Australia',
+  'Austria',
+  'Azerbaijan',
+  'Bahamas',
+  'Bahrain',
+  'Bangladesh',
+  'Barbados',
+  'Belarus',
+  'Belgium',
+  'Belize',
+  'Benin',
+  'Bhutan',
+  'Bolivia',
+  'Bosnia and Herzegovina',
+  'Botswana',
+  'Brazil',
+  'Brunei',
+  'Bulgaria',
+  'Burkina Faso',
+  'Burundi',
+  'Cabo Verde',
+  'Cambodia',
+  'Cameroon',
+  'Canada',
+  'Central African Republic',
+  'Chad',
+  'Chile',
+  'China',
+  'Colombia',
+  'Comoros',
+  'Congo (Congo-Brazzaville)',
+  'Costa Rica',
+  "Côte d'Ivoire",
+  'Croatia',
+  'Cuba',
+  'Cyprus',
+  'Czechia',
+  'Democratic Republic of the Congo',
+  'Denmark',
+  'Djibouti',
+  'Dominica',
+  'Dominican Republic',
+  'Ecuador',
+  'Egypt',
+  'El Salvador',
+  'Equatorial Guinea',
+  'Eritrea',
+  'Estonia',
+  'Eswatini',
+  'Ethiopia',
+  'Fiji',
+  'Finland',
+  'France',
+  'Gabon',
+  'Gambia',
+  'Georgia',
+  'Germany',
+  'Ghana',
+  'Greece',
+  'Grenada',
+  'Guatemala',
+  'Guinea',
+  'Guinea-Bissau',
+  'Guyana',
+  'Haiti',
+  'Honduras',
+  'Hungary',
+  'Iceland',
+  'India',
+  'Indonesia',
+  'Iran',
+  'Iraq',
+  'Ireland',
+  'Israel',
+  'Italy',
+  'Jamaica',
+  'Japan',
+  'Jordan',
+  'Kazakhstan',
+  'Kenya',
+  'Kiribati',
+  'Kuwait',
+  'Kyrgyzstan',
+  'Laos',
+  'Latvia',
+  'Lebanon',
+  'Lesotho',
+  'Liberia',
+  'Libya',
+  'Liechtenstein',
+  'Lithuania',
+  'Luxembourg',
+  'Madagascar',
+  'Malawi',
+  'Malaysia',
+  'Maldives',
+  'Mali',
+  'Malta',
+  'Marshall Islands',
+  'Mauritania',
+  'Mauritius',
+  'Mexico',
+  'Micronesia',
+  'Moldova',
+  'Monaco',
+  'Mongolia',
+  'Montenegro',
+  'Morocco',
+  'Mozambique',
+  'Myanmar',
+  'Namibia',
+  'Nauru',
+  'Nepal',
+  'Netherlands',
+  'New Zealand',
+  'Nicaragua',
+  'Niger',
+  'Nigeria',
+  'North Macedonia',
+  'Norway',
+  'Oman',
+  'Pakistan',
+  'Palau',
+  'Panama',
+  'Papua New Guinea',
+  'Paraguay',
+  'Peru',
+  'Philippines',
+  'Poland',
+  'Portugal',
+  'Qatar',
+  'Romania',
+  'Russia',
+  'Rwanda',
+  'Saint Kitts and Nevis',
+  'Saint Lucia',
+  'Saint Vincent and the Grenadines',
+  'Samoa',
+  'San Marino',
+  'Sao Tome and Principe',
+  'Saudi Arabia',
+  'Senegal',
+  'Serbia',
+  'Seychelles',
+  'Sierra Leone',
+  'Singapore',
+  'Slovakia',
+  'Slovenia',
+  'Solomon Islands',
+  'Somalia',
+  'South Africa',
+  'South Korea',
+  'South Sudan',
+  'Spain',
+  'Sri Lanka',
+  'Sudan',
+  'Suriname',
+  'Sweden',
+  'Switzerland',
+  'Syria',
+  'Tajikistan',
+  'Tanzania',
+  'Thailand',
+  'Timor-Leste',
+  'Togo',
+  'Tonga',
+  'Trinidad and Tobago',
+  'Tunisia',
+  'Turkey',
+  'Turkmenistan',
+  'Tuvalu',
+  'Uganda',
+  'Ukraine',
+  'United Arab Emirates',
+  'United Kingdom',
+  'United States of America',
+  'Uruguay',
+  'Uzbekistan',
+  'Vanuatu',
+  'Vatican City',
+  'Venezuela',
+  'Vietnam',
+  'Yemen',
+  'Zambia',
+  'Zimbabwe'
+];
+
+const NATIONALITIES = [
+  'Afghan',
+  'Albanian',
+  'Algerian',
+  'American',
+  'Andorran',
+  'Angolan',
+  'Argentine',
+  'Armenian',
+  'Australian',
+  'Austrian',
+  'Azerbaijani',
+  'Bahamian',
+  'Bahraini',
+  'Bangladeshi',
+  'Barbadian',
+  'Belarusian',
+  'Belgian',
+  'Belizean',
+  'Beninese',
+  'Bhutanese',
+  'Bolivian',
+  'Bosnian',
+  'Botswanan',
+  'Brazilian',
+  'British',
+  'Bruneian',
+  'Bulgarian',
+  'Burkinabe',
+  'Burmese',
+  'Burundian',
+  'Cambodian',
+  'Cameroonian',
+  'Canadian',
+  'Cape Verdean',
+  'Central African',
+  'Chadian',
+  'Chilean',
+  'Chinese',
+  'Colombian',
+  'Comoran',
+  'Congolese',
+  'Costa Rican',
+  'Croatian',
+  'Cuban',
+  'Cypriot',
+  'Czech',
+  'Danish',
+  'Djiboutian',
+  'Dominican',
+  'Dutch',
+  'Ecuadorian',
+  'Egyptian',
+  'Emirati',
+  'English',
+  'Equatorial Guinean',
+  'Eritrean',
+  'Estonian',
+  'Ethiopian',
+  'Fijian',
+  'Finnish',
+  'French',
+  'Gabonese',
+  'Gambian',
+  'Georgian',
+  'German',
+  'Ghanaian',
+  'Greek',
+  'Grenadian',
+  'Guatemalan',
+  'Guinean',
+  'Guyanese',
+  'Haitian',
+  'Honduran',
+  'Hungarian',
+  'Icelandic',
+  'Indian',
+  'Indonesian',
+  'Iranian',
+  'Iraqi',
+  'Irish',
+  'Israeli',
+  'Italian',
+  'Ivorian',
+  'Jamaican',
+  'Japanese',
+  'Jordanian',
+  'Kazakh',
+  'Kenyan',
+  'Kiribati',
+  'Kuwaiti',
+  'Kyrgyz',
+  'Lao',
+  'Latvian',
+  'Lebanese',
+  'Lesotho',
+  'Liberian',
+  'Libyan',
+  'Liechtensteiner',
+  'Lithuanian',
+  'Luxembourgish',
+  'Madagascan',
+  'Malawian',
+  'Malaysian',
+  'Maldivian',
+  'Malian',
+  'Maltese',
+  'Marshallese',
+  'Mauritanian',
+  'Mauritian',
+  'Mexican',
+  'Micronesian',
+  'Moldovan',
+  'Monacan',
+  'Mongolian',
+  'Montenegrin',
+  'Moroccan',
+  'Mozambican',
+  'Namibian',
+  'Nauruan',
+  'Nepalese',
+  'New Zealander',
+  'Nicaraguan',
+  'Nigerian',
+  'Nigerien',
+  'North Macedonian',
+  'Norwegian',
+  'Omani',
+  'Pakistani',
+  'Palauan',
+  'Panamanian',
+  'Papua New Guinean',
+  'Paraguayan',
+  'Peruvian',
+  'Philippine',
+  'Polish',
+  'Portuguese',
+  'Qatari',
+  'Romanian',
+  'Russian',
+  'Rwandan',
+  'Saint Lucian',
+  'Salvadoran',
+  'Samoan',
+  'San Marinese',
+  'Sao Tomean',
+  'Saudi',
+  'Scottish',
+  'Senegalese',
+  'Serbian',
+  'Seychellois',
+  'Sierra Leonean',
+  'Singaporean',
+  'Slovak',
+  'Slovenian',
+  'Solomon Islander',
+  'Somali',
+  'South African',
+  'South Korean',
+  'South Sudanese',
+  'Spanish',
+  'Sri Lankan',
+  'Sudanese',
+  'Surinamese',
+  'Swazi',
+  'Swedish',
+  'Swiss',
+  'Syrian',
+  'Tajik',
+  'Tanzanian',
+  'Thai',
+  'Togolese',
+  'Tongan',
+  'Trinidadian or Tobagonian',
+  'Tunisian',
+  'Turkish',
+  'Turkmen',
+  'Tuvaluan',
+  'Ugandan',
+  'Ukrainian',
+  'Uruguayan',
+  'Uzbek',
+  'Vanuatuan',
+  'Vatican',
+  'Venezuelan',
+  'Vietnamese',
+  'Welsh',
+  'Yemeni',
+  'Zambian',
+  'Zimbabwean'
+];
+
 const Field = ({ label, value }: { label: string; value?: string | number | boolean | null }) => (
   <div className="info-field">
     <p className="label">{label}</p>
@@ -66,11 +454,13 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
   const EditableField = ({
     label,
     path,
-    type = 'text'
+    type = 'text',
+    options
   }: {
     label: string;
     path: FieldPath;
-    type?: 'text' | 'date' | 'boolean';
+    type?: 'text' | 'date' | 'boolean' | 'select';
+    options?: string[];
   }) => {
     const rawValue = getValueAtPath(displayMember, path);
 
@@ -81,12 +471,12 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
     const id = path.join('-');
     const currentValue = rawValue ?? (type === 'boolean' ? false : '');
 
-    return (
-      <div className="info-field editable">
-        <label className="label" htmlFor={id}>
-          {label}
-        </label>
-        {type === 'boolean' ? (
+    if (type === 'boolean') {
+      return (
+        <div className="info-field editable">
+          <label className="label" htmlFor={id}>
+            {label}
+          </label>
           <select
             id={id}
             value={String(currentValue)}
@@ -95,14 +485,43 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
             <option value="true">Yes</option>
             <option value="false">No</option>
           </select>
-        ) : (
-          <input
+        </div>
+      );
+    }
+
+    if (type === 'select' && options) {
+      return (
+        <div className="info-field editable">
+          <label className="label" htmlFor={id}>
+            {label}
+          </label>
+          <select
             id={id}
-            type={type === 'date' ? 'date' : 'text'}
             value={String(currentValue)}
             onChange={(event) => handleFieldChange(path, event.target.value)}
-          />
-        )}
+          >
+            <option value="">Select an option</option>
+            {options.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+        </div>
+      );
+    }
+
+    return (
+      <div className="info-field editable">
+        <label className="label" htmlFor={id}>
+          {label}
+        </label>
+        <input
+          id={id}
+          type={type === 'date' ? 'date' : 'text'}
+          value={String(currentValue)}
+          onChange={(event) => handleFieldChange(path, event.target.value)}
+        />
       </div>
     );
   };
@@ -246,11 +665,31 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
             <EditableField label="Last Name" path={['lastName']} />
             <EditableField label="Title" path={['title']} />
             <EditableField label="Date of Birth" path={['dob']} type="date" />
-            <EditableField label="Gender" path={['gender']} />
-            <EditableField label="Marital Status" path={['maritalStatus']} />
-            <EditableField label="Nationality" path={['nationality']} />
-            <EditableField label="Country of Birth" path={['countryOfBirth']} />
-            <EditableField label="Country of Residence" path={['countryOfResidence']} />
+            <EditableField
+              label="Gender"
+              path={['gender']}
+              type="select"
+              options={['Male', 'Female']}
+            />
+            <EditableField
+              label="Marital Status"
+              path={['maritalStatus']}
+              type="select"
+              options={['Married', 'Single', 'Divorced', 'Widowed']}
+            />
+            <EditableField label="Nationality" path={['nationality']} type="select" options={NATIONALITIES} />
+            <EditableField
+              label="Country of Birth"
+              path={['countryOfBirth']}
+              type="select"
+              options={COUNTRIES}
+            />
+            <EditableField
+              label="Country of Residence"
+              path={['countryOfResidence']}
+              type="select"
+              options={COUNTRIES}
+            />
             <EditableField label="Birth Place" path={['birthPlace']} />
             <EditableField label="Home Town" path={['homeTown']} />
             <EditableField label="Child" path={['childFlag']} type="boolean" />
