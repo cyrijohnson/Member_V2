@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import logo from '../assets/logo.svg';
+import logo from '../assets/Logo.png';
 
 interface HeaderProps {
   isAuthenticated: boolean;
@@ -16,12 +16,8 @@ export const Header = ({ isAuthenticated, onSignOut }: HeaderProps) => {
 
   return (
     <header className="app-header">
-      <div className="brand">
-        <img src={logo} alt="CoP UK logo" className="brand-mark" />
-        <div className="brand-text">
-          <span className="brand-accent">CoP UK</span>
-          <span>Membership</span>
-        </div>
+      <div>
+        <img src={logo} alt="CoP UK logo" style={{height:"4em", width:"9em"}}/>
       </div>
       <nav>
         <ul>
