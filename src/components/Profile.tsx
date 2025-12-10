@@ -439,6 +439,7 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
   const [formData, setFormData] = useState<MemberDetail | null>(member);
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [saveSuccess, setSaveSuccess] = useState<string | null>(null);
   const [disabilityTypes, setDisabilityTypes] = useState<DisabilityTypeOption[]>([]);
   const [professionCategories, setProfessionCategories] = useState<ProfessionCategoryOption[]>([]);
   const [activeFieldId, setActiveFieldId] = useState<string | null>(null);
@@ -485,6 +486,7 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
     setFormData(member);
     setIsEditing(false);
     setSaveError(null);
+    setSaveSuccess(null);
     setActiveFieldId(null);
   }, [member]);
 
@@ -772,12 +774,14 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
     setFormData(member);
     setIsEditing(true);
     setActiveFieldId(null);
+    setSaveSuccess(null);
   };
 
   const handleCancelEdit = () => {
     setFormData(member);
     setIsEditing(false);
     setSaveError(null);
+    setSaveSuccess(null);
     setActiveFieldId(null);
   };
 
@@ -788,9 +792,15 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
     try {
       setIsSaving(true);
       setSaveError(null);
-      await updateMyDetails(formData);
+      setSaveSuccess(null);
+      const { wasEmptySuccess } = await updateMyDetails(formData);
       setIsEditing(false);
-      await onRetry();
+      setSaveSuccess(wasEmptySuccess ? 'Profile saved successfully.' : 'Profile updated successfully.');
+      try {
+        await onRetry();
+      } catch (refreshError) {
+        console.error('Unable to refresh profile after save', refreshError);
+      }
     } catch (error) {
       console.error('Unable to save profile', error);
       setSaveError('Unable to save your changes. Please try again.');
@@ -897,6 +907,7 @@ export const Profile = ({ member, isLoading, errorMessage, onRetry }: ProfilePro
         </div>
       </div>
 
+      {saveSuccess && <p className="success">{saveSuccess}</p>}
       {saveError && <p className="error">{saveError}</p>}
 
       <div className="section-grid">
