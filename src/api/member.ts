@@ -75,7 +75,10 @@ export const updateMyDetails = async (payload: MemberDetail): Promise<UpdateMyDe
   const requestPayload = {
     MemberId: payload.memberId,
     LocalAssemblyId: payload.localAssembly?.assemblyId,
-    ProfCatId: payload.profCat?.ProfCatId ?? payload.profCat?.profCatId ?? payload.profCat?.id,
+    ProfCatId:
+      payload.profCat?.ProfCatId ??
+      (payload.profCat as { profCatId?: string } | null | undefined)?.profCatId ??
+      payload.profCat?.id,
     MemberAddress:
       payload.memberAddress?.addressId ?? (payload.memberAddress as { id?: string } | undefined)?.id,
     AssuranceId: payload.salvationStatus?.assuranceId,
